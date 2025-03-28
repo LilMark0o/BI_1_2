@@ -59,7 +59,7 @@ function ReTrain() {
     const renderMetrics = (metrics) => {
         return (
             <div className="mt-4">
-                <h3>Metrics</h3>
+                <h3>Resultados metricas reentrenamiento</h3>
                 <table className="table table-bordered">
                     <thead>
                         <tr>
@@ -100,7 +100,24 @@ function ReTrain() {
 
     return (
         <div className="container mt-5">
-            <h2 className="mb-4">ReTrain</h2>
+            <div className="text-center">
+                <img src="/logo.png" alt="Logo" className="mx-auto mb-3" style={{ width: "100px", height: "auto" }} />
+                <h1 className="fw-bold">ReTrain del modelo de analítica de texto - Detección de Noticias</h1> <br />
+            </div>
+
+            <strong>Instrucciones reentrenamiento del modelo: </strong>
+            <p>
+                Usa esta sección para mejorar la precisión del modelo con nuevos datos. Puedes elegir entre:
+            </p>
+            <ul>
+                <li><strong>Entrada manual:</strong>  Ingresa noticias en formato JSON en el cuadro de texto.</li>
+                <li><strong>Subida de archivo:</strong> Carga un archivo JSON con múltiples noticias para analizar.</li>
+            </ul>
+            <p>
+                Luego, haz clic en <strong>"Subir noticias y reentrenar"</strong> para actualizar el modelo con la nueva información.
+            </p>
+            <hr className="my-4" /> 
+            <h3>Ingresar noticias para reentrenamiento:</h3>
             <div className="mb-4">
                 <label className="me-3">
                     <input
@@ -110,7 +127,7 @@ function ReTrain() {
                         checked={mode === "manual"}
                         onChange={() => setMode("manual")}
                     />
-                    Manual JSON Input
+                    Entrada manual JSON
                 </label>
                 <label>
                     <input
@@ -120,7 +137,7 @@ function ReTrain() {
                         checked={mode === "upload"}
                         onChange={() => setMode("upload")}
                     />
-                    Upload JSON File
+                    Subir archivo JSON
                 </label>
             </div>
             <form onSubmit={handleSubmit}>
@@ -140,7 +157,7 @@ function ReTrain() {
                 ) : (
                     <div className="mb-3">
                         <label htmlFor="fileUpload" className="form-label">
-                            Upload JSON File
+                            Subir archivo JSON
                         </label>
                         <input
                             id="fileUpload"
@@ -155,7 +172,7 @@ function ReTrain() {
                     </div>
                 )}
                 <button type="submit" className="btn btn-primary">
-                    Upload Data
+                    Subir noticias y reentrenar
                 </button>
             </form>
 
@@ -163,7 +180,7 @@ function ReTrain() {
             {error && <p className="mt-3 text-danger">Error: {error}</p>}
 
             {responseData && (
-                <div className="mt-5">
+                <div className="mt-5">  
                     <div className="alert alert-success" role="alert">
                         {responseData.message}
                     </div>

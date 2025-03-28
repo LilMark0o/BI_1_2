@@ -5,11 +5,14 @@ import ReTrain from "./pages/ReTrain";
 
 function Home() {
   return (
+
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-light">
-      <h1 className="mb-4">Welcome</h1>
+      <img src="/logo.png" alt="Logo" className="mx-auto mb-3" style={{ width: "100px", height: "auto" }} />
+      <h1 className="fw-bold">Proyecto analítica de texto - Detección de Noticias</h1>
+      <h1 className="mb-4">Grupo 19</h1>
       <div>
-        <Link to="/predict" className="btn btn-primary m-2">Go to Predict</Link>
-        <Link to="/retrain" className="btn btn-secondary m-2">Go to ReTrain</Link>
+        <Link to="/predict" className="btn btn-primary m-2">Ir a predicción de noticias</Link>
+        <Link to="/retrain" className="btn btn-secondary m-2">Ir al ReTrain</Link>
       </div>
     </div>
   );
