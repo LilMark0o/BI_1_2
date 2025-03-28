@@ -87,7 +87,7 @@ function Predict() {
                 body: bodyData,
             });
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                throw new Error("Network response was not ok - Revisa la noticia que estás intentando analizar");
             }
             const data = await response.json();
             setPredictions(data);
@@ -96,11 +96,52 @@ function Predict() {
         } finally {
             setLoading(false);
         }
+
+        if (mode === "form") {
+            // Validación: Verificar que todos los campos estén llenos
+            const isFormValid = formData.every(item =>
+                item.ID.trim() !== "" &&
+                item.Titulo.trim() !== "" &&
+                item.Descripcion.trim() !== "" &&
+                item.Fecha.trim() !== ""
+            );
+    
+            if (!isFormValid) {
+                setError("Por favor completa todos los campos antes de enviar.");
+                setLoading(false);
+                return;
+            }
+        }
     };
 
     return (
         <div className="container mt-5">
-            <h2 className="mb-4">Predict</h2>
+            <div className="text-center">
+                <img src="/logo.png" alt="Logo" className="mx-auto mb-3" style={{ width: "100px", height: "auto" }} />
+                <h1 className="fw-bold">Predecir detección de noticias falsas o verdaderas</h1> <br />
+            </div>
+            
+            <p className="text-gray-600">
+            Esta aplicación utiliza modelos de aprendizaje automático para analizar noticias y determinar si son verdaderas o falsas. 
+            Basándose en el contenido del título y la descripción, el sistema calcula una probabilidad que indica la certeza de su predicción. 
+            Esto puede ayudar a los usuarios a identificar posibles noticias falsas y tomar decisiones informadas. <br /> <br />
+
+            <strong>Cómo usar la aplicación:</strong> <br />
+            <ul>
+                <li><b>Opción 1:</b> Ingresa una noticia manualmente escribiendo el título y la descripción en el campo de texto.</li>
+                <li><b>Opción 2:</b> Sube un archivo JSON con múltiples noticias para un análisis en lote.</li>
+            </ul>
+
+            <strong>Consejos:</strong> <br />
+            <ul>
+                <li>El modelo evaluará cada noticia y mostrará una predicción con un valor de <b>0 (falsa)</b> o <b>1 (verdadera)</b>, acompañado de un porcentaje de certeza.</li>
+                <li>Si tienes dudas sobre cómo estructurar el archivo JSON, puedes utilizar la opción de <b>"JSON Precargado"</b> como referencia.</li>
+                <li>Una vez procesadas, las predicciones aparecerán en la parte inferior con un formato claro y resaltado.</li>
+            </ul>
+            </p>
+            <hr className="my-4" /> 
+
+            <h3>Ingresar noticias a analizar:</h3>
 
             {/* Mode selection */}
             <div className="mb-4">
@@ -112,7 +153,7 @@ function Predict() {
                         checked={mode === "json"}
                         onChange={() => setMode("json")}
                     />
-                    Preloaded JSON
+                    JSON Precargado
                 </label>
                 <label className="me-3">
                     <input
@@ -122,7 +163,7 @@ function Predict() {
                         checked={mode === "form"}
                         onChange={() => setMode("form")}
                     />
-                    Form Input
+                    Escribir manualmente
                 </label>
                 <label>
                     <input
@@ -132,7 +173,7 @@ function Predict() {
                         checked={mode === "upload"}
                         onChange={() => setMode("upload")}
                     />
-                    Upload File
+                    Subir archivo JSON
                 </label>
             </div>
 
@@ -156,13 +197,14 @@ function Predict() {
                     <div>
                         {formData.map((item, index) => (
                             <div key={index} className="mb-4 border p-3 rounded">
-                                <h5>Item {index + 1}</h5>
+                                <h5> Noticia: Item # {index + 1}</h5>
                                 <div className="mb-3">
                                     <label className="form-label">ID</label>
                                     <input
                                         type="text"
                                         className="form-control"
                                         value={item.ID}
+                                        placeholder="Ejemplo: 123"
                                         onChange={(e) => handleFormChange(index, "ID", e.target.value)}
                                     />
                                 </div>
@@ -172,6 +214,7 @@ function Predict() {
                                         type="text"
                                         className="form-control"
                                         value={item.Titulo}
+                                        placeholder="Ejemplo: La mesa del congreso censura un encuentro internacional de parlamentarios"
                                         onChange={(e) => handleFormChange(index, "Titulo", e.target.value)}
                                     />
                                 </div>
@@ -181,6 +224,7 @@ function Predict() {
                                         className="form-control"
                                         rows="3"
                                         value={item.Descripcion}
+                                        placeholder="Ejemplo: Portavoces de Ciudadanos y EQUO denuncian juntos esta censura que consideran injustificable."
                                         onChange={(e) =>
                                             handleFormChange(index, "Descripcion", e.target.value)
                                         }
@@ -192,6 +236,7 @@ function Predict() {
                                         type="text"
                                         className="form-control"
                                         value={item.Fecha}
+                                        placeholder="Ejemplo: 30/03/2025"
                                         onChange={(e) => handleFormChange(index, "Fecha", e.target.value)}
                                     />
                                 </div>
@@ -202,7 +247,7 @@ function Predict() {
                             className="btn btn-secondary mb-3"
                             onClick={handleAddForm}
                         >
-                            Add Another Item
+                            Añadir otra noticia
                         </button>
                     </div>
                 )}
@@ -225,28 +270,49 @@ function Predict() {
                     </div>
                 )}
 
-                <button type="submit" className="btn btn-primary">
-                    Upload Data
+                <button type="submit" className="btn btn-primary shadow-sm px-4 py-2">
+                    Subir noticia(s)
                 </button>
             </form>
 
             {loading && <p className="mt-3">Loading...</p>}
             {error && <p className="mt-3 text-danger">Error: {error}</p>}
 
-            {predictions.length > 0 && (
+            <hr className="my-4" /> 
+
+            {predictions.length === 0 ? (
+                <p className="mt-3 text-gray-500">No hay predicciones aún. Ingresa una noticia para analizar.</p>) : (
+                    
                 <div className="mt-5">
-                    <h3>Predictions</h3>
-                    <p1> <b>Prediction: </b>1 significa que el modelo considera la noticia como verdadera, mientras que 0 indica que es falsa</p1> <br />
-                    <p1> <b>Probability: </b> La probabilidad indica el grado de certeza del modelo en su predicción. Entre más cercano a 1 hay mayor certeza. </p1> <br />
+                    <h3> Resultados predicciones:</h3>
+                    <p1> <b>Resultado predicción: </b>1 significa que el modelo considera la noticia como verdadera, mientras que 0 indica que es falsa.</p1> <br />
+                    <p1> <b>Probabilidad: </b> La probabilidad indica el grado de certeza del modelo en su predicción. Entre más cercano a 1 hay mayor certeza. </p1> <br />
                     <div className="list-group">
                         {predictions.map((item, index) => (
-                            <div key={index} className="list-group-item">
+                            <div key={index} className="list-group-item p-3 mb-3 rounded" style={{ 
+                                backgroundColor: item.prediction === 1 ? "#e6ffe6" : "#ffe6e6", 
+                                borderLeft: `5px solid ${item.prediction === 1 ? "green" : "red"}` 
+                            }}>
+                                <p><strong>Index de la noticia: </strong>{index }</p>
                                 <p>
-                                    <strong>Prediction:</strong> {item.prediction}
+                                    <strong>Resultado predicción:</strong> {item.prediction}
                                 </p>
+                                <p>{item.prediction === 1 ? " ✅ La noticia parece verdadera" : " ❌ La noticia parece falsa"}</p>
                                 <p>
-                                    <strong>Probability:</strong> {parseFloat(item.probability).toFixed(3)}
+                                    <strong>Probabilidad:</strong> {parseFloat(item.probability).toFixed(3)}
                                 </p>
+                                <div className="progress">
+                        <div 
+                            className="progress-bar" 
+                            role="progressbar"
+                            style={{
+                                width: `${item.probability * 100}%`,
+                                backgroundColor: item.prediction === 1 ? "green" : "red"
+                            }}
+                        >
+                            {`${(item.probability * 100).toFixed(1)}%`}
+                        </div>
+                    </div>
                             </div>
                         ))}
                     </div>
