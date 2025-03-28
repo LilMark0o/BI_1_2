@@ -38,7 +38,7 @@ function ReTrain() {
         const payload = mode === "upload" ? fileData : jsonInput;
 
         try {
-            const response = await fetch("http://0.0.0.0:8000/retrain", {
+            const response = await fetch("http://localhost:8000/retrain", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: payload,
