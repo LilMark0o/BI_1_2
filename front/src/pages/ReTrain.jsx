@@ -77,9 +77,9 @@ function ReTrain() {
         let interpretacion = "";
     
         //  Precisión
-        if (precision > 0.90) {
+        if (precision > 0.9) {
             interpretacion += " Alta precisión: el modelo evita falsos positivos en su mayoría.\n";
-        } else if (precision > 0.80) {
+        } else if (precision > 0.65) {
             interpretacion += " Buena precisión: el modelo tiene algunos falsos positivos, pero sigue siendo confiable.\n";
         } else {
             interpretacion += " Precisión moderada: el modelo podría clasificar erróneamente algunas noticias como falsas o verdaderas. \n";
@@ -88,7 +88,7 @@ function ReTrain() {
         //  Recall
         if (recall > 0.90) {
             interpretacion += " Alto recall: el modelo detecta la mayoría de las noticias relevantes.\n ";
-        } else if (recall > 0.80) {
+        } else if (recall > 0.65) {
             interpretacion += " Buen recall: el modelo captura la mayoría de los casos, aunque algunos pueden escaparse.\n ";
         } else {
             interpretacion += " Recall bajo: puede estar dejando pasar noticias que deberían haber sido detectadas. \n";
@@ -97,7 +97,7 @@ function ReTrain() {
         //  F1-Score
         if (f1Score > 0.90) {
             interpretacion += " Excelente balance entre precisión y recall. \n";
-        } else if (f1Score > 0.80) {
+        } else if (f1Score > 0.65) {
             interpretacion += " Buen balance entre precisión y recall.\n ";
         } else {
             interpretacion += " Balance moderado: revisar el modelo para mejorar precisión y recall.\n ";
