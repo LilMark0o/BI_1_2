@@ -236,6 +236,8 @@ function Predict() {
             {predictions.length > 0 && (
                 <div className="mt-5">
                     <h3>Predictions</h3>
+                    <p1> <b>Prediction: </b>1 significa que el modelo considera la noticia como verdadera, mientras que 0 indica que es falsa</p1> <br />
+                    <p1> <b>Probability: </b> La probabilidad indica el grado de certeza del modelo en su predicción. Entre más cercano a 1 hay mayor certeza. </p1> <br />
                     <div className="list-group">
                         {predictions.map((item, index) => (
                             <div key={index} className="list-group-item">
@@ -243,7 +245,7 @@ function Predict() {
                                     <strong>Prediction:</strong> {item.prediction}
                                 </p>
                                 <p>
-                                    <strong>Probability:</strong> {item.probability}
+                                    <strong>Probability:</strong> {parseFloat(item.probability).toFixed(3)}
                                 </p>
                             </div>
                         ))}
