@@ -55,11 +55,79 @@ function ReTrain() {
         }
     };
 
+    const interpretarAccuracy = (accuracy) => {
+        if (accuracy > 0.90) {
+            return "Excelente precisión global: el modelo clasifica correctamente la mayoría de las noticias.";
+        } else if (accuracy > 0.80) {
+            return "Buena precisión: aunque el modelo es confiable, algunos errores pueden ocurrir.";
+        } else if (accuracy > 0.70) {
+            return "Precisión aceptable: el modelo podría necesitar mejoras en algunas clasificaciones.";
+        } else {
+            return "Precisión baja: considera revisar los datos de entrenamiento o ajustar el modelo.";
+        }
+    };
+
+    const interpretarResultados = (value) => {
+        if (!value) return "No hay resultados disponibles.";
+    
+        const precision = value.precision || 0;
+        const recall = value.recall || 0;
+        const f1Score = value["f1-score"] || 0;
+    
+        let interpretacion = "";
+    
+        //  Precisión
+        if (precision > 0.90) {
+            interpretacion += " Alta precisión: el modelo evita falsos positivos en su mayoría.\n";
+        } else if (precision > 0.80) {
+            interpretacion += " Buena precisión: el modelo tiene algunos falsos positivos, pero sigue siendo confiable.\n";
+        } else {
+            interpretacion += " Precisión moderada: el modelo podría clasificar erróneamente algunas noticias como falsas o verdaderas. \n";
+        }
+    
+        //  Recall
+        if (recall > 0.90) {
+            interpretacion += " Alto recall: el modelo detecta la mayoría de las noticias relevantes.\n ";
+        } else if (recall > 0.80) {
+            interpretacion += " Buen recall: el modelo captura la mayoría de los casos, aunque algunos pueden escaparse.\n ";
+        } else {
+            interpretacion += " Recall bajo: puede estar dejando pasar noticias que deberían haber sido detectadas. \n";
+        }
+    
+        //  F1-Score
+        if (f1Score > 0.90) {
+            interpretacion += " Excelente balance entre precisión y recall. \n";
+        } else if (f1Score > 0.80) {
+            interpretacion += " Buen balance entre precisión y recall.\n ";
+        } else {
+            interpretacion += " Balance moderado: revisar el modelo para mejorar precisión y recall.\n ";
+        }
+    
+        return interpretacion;
+    };
+    
     // Function to render the metrics in a pretty table
     const renderMetrics = (metrics) => {
         return (
             <div className="mt-4">
-                <h3>Resultados metricas reentrenamiento</h3>
+                <h3>Resultados métricas reentrenamiento</h3>
+                
+                <strong>Descripción de las métricas:</strong> <br />
+                <ul>
+                    <li><b>Precisión (Precision):</b> Indica qué porcentaje de las noticias clasificadas como verdaderas realmente lo son. Un valor alto significa que hay pocos falsos positivos.</li>
+                    <li><b>Recall:</b> Mide cuántas noticias verdaderas fueron correctamente identificadas por el modelo. Un valor alto indica que el modelo detecta la mayoría de las noticias verdaderas.</li>
+                    <li><b>F1-Score:</b> Es un equilibrio entre precisión y recall. Un F1-Score alto significa que el modelo es consistente en ambas métricas.</li>
+                    <li><b>Accuracy:</b> Representa el porcentaje total de clasificaciones correctas sobre todas las noticias analizadas.</li>
+                    <li><b>Macro Avg:</b> Promedio de precisión, recall y F1-score entre todas las clases, sin considerar el tamaño de cada clase.</li>
+                    <li><b>Weighted Avg:</b> Similar a macro avg, pero ponderando cada métrica según el número de ejemplos en cada clase.</li>
+                </ul>
+
+                <strong>Interpretación:</strong> <br />
+                <ul>
+                    <li>Valores altos en precisión y recall indican que el modelo es confiable en sus predicciones.</li>
+                    <li>Si el recall es alto pero la precisión es baja, significa que el modelo identifica muchas noticias verdaderas pero también genera falsos positivos.</li>
+                    <li>El F1-Score es útil cuando hay un desbalance entre clases (por ejemplo, si hay más noticias falsas que verdaderas).</li>
+                </ul>
                 <table className="table table-bordered">
                     <thead>
                         <tr>
@@ -71,10 +139,11 @@ function ReTrain() {
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.entries(metrics).map(([key, value]) => {
+                        {Object.entries(metrics).filter(([key]) => !["accuracy"].includes(key)).map(([key, value]) => {
                             // If value is an object, render its keys; otherwise, show it as a single value row
                             if (typeof value === "object") {
                                 return (
+                                    <React.Fragment key={key}>
                                     <tr key={key}>
                                         <td>{key}</td>
                                         <td>{value.precision?.toFixed(3)}</td>
@@ -82,6 +151,13 @@ function ReTrain() {
                                         <td>{value["f1-score"]?.toFixed(3)}</td>
                                         <td>{value.support}</td>
                                     </tr>
+
+                                    <tr>
+                                    <td colSpan="5" className="text-muted">
+                                        <small>{interpretarResultados(value)}</small>
+                                    </td>
+                                    </tr>
+                                     </React.Fragment>
                                 );
                             } else {
                                 return (
@@ -92,8 +168,34 @@ function ReTrain() {
                                 );
                             }
                         })}
+
+
                     </tbody>
                 </table>
+
+                {/* Bloque de Accuracy - Se muestra solo una vez */}
+                {metrics.accuracy && (
+                    <div className="mt-4">
+                    <h5>Accuracy del modelo</h5>
+                    <div className="progress">
+                        <div 
+                            className="progress-bar" 
+                            role="progressbar"
+                            style={{
+                                width: `${metrics.accuracy * 100}%`,
+                                backgroundColor: metrics.accuracy >= 0.8 ? "green" : "red"
+                            }}
+                        >
+                            {`${(metrics.accuracy * 100).toFixed(1)}%`}
+                        </div>
+                    </div>
+
+                    {/* <ProgressBar now={metrics.accuracy * 100} label={`${(metrics.accuracy * 100).toFixed(2)}%`} /> */}
+                    <p className="mt-2">
+                        <strong>Análisis:</strong> {interpretarAccuracy(metrics.accuracy)}
+                    </p>
+                    </div>
+                )}
             </div>
         );
     };
