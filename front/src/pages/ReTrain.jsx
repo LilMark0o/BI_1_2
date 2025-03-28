@@ -183,7 +183,10 @@ function ReTrain() {
                             role="progressbar"
                             style={{
                                 width: `${metrics.accuracy * 100}%`,
-                                backgroundColor: metrics.accuracy >= 0.8 ? "green" : "red"
+                                backgroundColor: 
+                                    metrics.accuracy >= 0.8 ? "green" : 
+                                    metrics.accuracy >= 0.5 ? "yellow" : "red",
+                                color: metrics.accuracy >= 0.5 ? "black" : "white"
                             }}
                         >
                             {`${(metrics.accuracy * 100).toFixed(1)}%`}
