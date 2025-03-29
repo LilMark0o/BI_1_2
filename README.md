@@ -4,7 +4,7 @@
 * Jenifer Arce
 
 ## Video:
-[link video]()
+[link video](https://youtu.be/cxMEdSzUQs0)
 
 ## Instrucciones para usar la aplicación:
 
